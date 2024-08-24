@@ -487,6 +487,7 @@ export default class SRPlugin extends Plugin {
         );
         const calc: DeckTreeStatsCalculator = new DeckTreeStatsCalculator();
         this.cardStats = calc.calculate(this.deckTree);
+        setDueDates(this.cardStats.delayedDays.dict, this.cardStats.delayedDays.dict);
 
         if (this.data.settings.showDebugMessages) {
             this.showSyncInfo();

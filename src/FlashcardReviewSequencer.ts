@@ -9,6 +9,8 @@ import { Note } from "./Note";
 import { IDeckTreeIterator } from "./DeckTreeIterator";
 import { IQuestionPostponementList } from "./QuestionPostponementList";
 import { DataLocation } from "src/dataStore/dataLocation";
+import { DataStore } from "./dataStore/data";
+import { RPITEMTYPE } from "./dataStore/repetitionItem";
 
 export interface IFlashcardReviewSequencer {
     get hasCurrentCard(): boolean;
@@ -140,6 +142,11 @@ export class FlashcardReviewSequencer implements IFlashcardReviewSequencer {
     }
 
     async processReview_ReviewMode(response: ReviewResponse): Promise<void> {
+        if (this.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
+            // just update storedata
+            this._processReviewbyAlgo(response);
+        }
+
         if (this.settings.dataLocation === DataLocation.SaveOnNoteFile) {
             if (response != ReviewResponse.Reset || this.currentCard.hasSchedule) {
                 // We need to update the schedule if:
@@ -154,10 +161,8 @@ export class FlashcardReviewSequencer implements IFlashcardReviewSequencer {
                 // Update the source file with the updated schedule
                 await this.currentQuestion.writeQuestion(this.settings);
             }
-        } else if (
-            this.settings.cardBlockID &&
-            !this.currentQuestion.questionText.obsidianBlockId
-        ) {
+        }
+        if (this.settings.cardBlockID && !this.currentQuestion.questionText.obsidianBlockId) {
             // Update the source file with the updated block id
             await this.currentQuestion.writeQuestion(this.settings);
         }
@@ -177,6 +182,15 @@ export class FlashcardReviewSequencer implements IFlashcardReviewSequencer {
                 this.deleteCurrentCard();
             }
         }
+    }
+
+    private _processReviewbyAlgo(response: ReviewResponse) {
+        // const opt = algo.srsOptions()[response];
+        const store = DataStore.getInstance();
+        const id = this.currentCard.Id;
+        store.updateReviewedCounts(id, RPITEMTYPE.CARD);
+        store.reviewId(id, response);
+        store.save();
     }
 
     private async burySiblingCards(): Promise<void> {

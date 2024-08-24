@@ -330,7 +330,7 @@ export class DataStore {
      * @param {number} itemId
      * @param {string} option
      */
-    reviewId(itemId: number, option: string) {
+    reviewId(itemId: number, option: string | number) {
         const item = this.getItembyID(itemId);
         let result: ReviewResult;
         if (item == null) {
@@ -338,6 +338,9 @@ export class DataStore {
         }
 
         const algorithm = SrsAlgorithm.getInstance();
+        if (typeof option === "number") {
+            option = algorithm.srsOptions()[option] as string;
+        }
         if (this.data.queues.isInRepeatQueue(itemId)) {
             result = algorithm.onSelection(item, option, true);
         } else {
