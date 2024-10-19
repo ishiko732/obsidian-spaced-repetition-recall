@@ -192,7 +192,7 @@ export default class SRPlugin extends Plugin {
                 window.setInterval(
                     async () => {
                         await this.sync();
-                        this.store.save();
+                        // this.store.save();
                     },
                     5 * 60 * 1000,
                 ),
@@ -487,6 +487,7 @@ export default class SRPlugin extends Plugin {
         );
         const calc: DeckTreeStatsCalculator = new DeckTreeStatsCalculator();
         this.cardStats = calc.calculate(this.deckTree);
+        setDueDates(this.cardStats.delayedDays.dict, this.cardStats.delayedDays.dict);
 
         if (this.data.settings.showDebugMessages) {
             this.showSyncInfo();

@@ -8,6 +8,7 @@ import { SrsAlgorithm } from "src/algorithms/algorithms";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
 // import { debug } from "src/util/utils_recall";
 import { TouchOnMobile } from "src/Events/touchEvent";
+import { Iadapter } from "src/dataStore/adapter";
 
 export class reviewResponseModal {
     private static instance: reviewResponseModal;
@@ -113,7 +114,7 @@ export class reviewResponseModal {
             return;
         }
 
-        const openFile: TFile | null = app.workspace.getActiveFile();
+        const openFile: TFile | null = Iadapter.instance.app.workspace.getActiveFile();
         if (openFile && openFile.extension === "md") {
             if (this.submitCallback) {
                 this.submitCallback(openFile, this.options.indexOf(s));
@@ -220,7 +221,8 @@ export class reviewResponseModal {
                 bar &&
                 bar.checkVisibility() &&
                 this.isDisplay() &&
-                app.workspace.getActiveViewOfType(MarkdownView).getMode() === "preview"
+                Iadapter.instance.app.workspace.getActiveViewOfType(MarkdownView).getMode() ===
+                    "preview"
             ) {
                 const consume = () => {
                     e.preventDefault();
@@ -298,7 +300,7 @@ export class reviewResponseModal {
         const tout = Platform.isMobile ? 5000 : 10000;
         const timmer = setInterval(() => {
             const rrBar = document.getElementById(this.barId);
-            const Markdown = app.workspace.getActiveViewOfType(MarkdownView);
+            const Markdown = Iadapter.instance.app.workspace.getActiveViewOfType(MarkdownView);
             if (rrBar) {
                 if (!Markdown) {
                     this.selfDestruct();

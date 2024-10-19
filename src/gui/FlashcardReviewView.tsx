@@ -16,12 +16,11 @@ import { Note } from "src/Note";
 import { RenderMarkdownWrapper } from "src/util/RenderMarkdownWrapper";
 import { CardScheduleInfo } from "src/CardSchedule";
 import { FlashcardModalMode } from "./FlashcardModal";
-import { RPITEMTYPE, RepetitionItem } from "src/dataStore/repetitionItem";
+import { RepetitionItem } from "src/dataStore/repetitionItem";
 import { SrTFile } from "src/SRFile";
 import { ItemInfoModal } from "./info";
-import { setDueDates } from "src/algorithms/balance/balance";
 import { DataLocation } from "src/dataStore/dataLocation";
-import { BlockUtils, debug } from "src/util/utils_recall";
+import { debug } from "src/util/utils_recall";
 
 export class FlashcardReviewView {
     public app: App;
@@ -377,23 +376,8 @@ export class FlashcardReviewView {
     }
 
     private async _processReview(response: ReviewResponse): Promise<void> {
-        if (this.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
-            // just update storedata
-            this._processReviewbyAlgo(response);
-        }
         await this.reviewSequencer.processReview(response);
         await this._handleSkipCard();
-    }
-
-    private _processReviewbyAlgo(response: ReviewResponse) {
-        const algo = this.plugin.algorithm;
-        setDueDates(this.plugin.cardStats.delayedDays.dict, this.plugin.cardStats.delayedDays.dict);
-        const opt = algo.srsOptions()[response];
-        const store = this.plugin.store;
-        const id = this._currentCard.Id;
-        store.updateReviewedCounts(id, RPITEMTYPE.CARD);
-        store.reviewId(id, opt);
-        store.save();
     }
 
     private async _skipCurrentCard(): Promise<void> {
