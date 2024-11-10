@@ -845,7 +845,7 @@ export class DataStore {
         removedtkfiles = removedtkfiles - this.data.trackedFiles.length;
         removedItems = removedItems - this.itemSize;
         this.data.queues.clearQueue();
-        this.save();
+        await this.save();
 
         console.log(
             "removed " +
