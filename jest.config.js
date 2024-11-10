@@ -34,6 +34,7 @@ module.exports = {
         "build",
     ],
     coverageDirectory: "coverage",
+    coverageReporters: ["text", "html"],
     collectCoverage: true,
     coverageProvider: "v8",
     coverageThreshold: {
