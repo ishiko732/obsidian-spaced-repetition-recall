@@ -2,7 +2,7 @@ import { ReviewResponse } from "src/algorithms/base/repetition-item";
 import { TICKS_PER_DAY } from "src/constants";
 import { DueDateHistogram } from "src/due-date-histogram";
 import { t } from "src/lang/helpers";
-import { SRSettings } from "src/settings";
+import { IOsrParameters } from "./types";
 
 // Note that if dueDateHistogram is provided, then it is just used to assist with fuzzing.
 // (Unlike earlier versions, it is not updated based on the calculated schedule. The
@@ -13,7 +13,7 @@ export function osrSchedule(
     originalInterval: number,
     ease: number,
     delayedBeforeReview: number,
-    settings: SRSettings,
+    parameters: IOsrParameters,
     dueDateHistogram?: DueDateHistogram,
 ): Record<string, number> {
     const delayedBeforeReviewDays = Math.max(0, Math.floor(delayedBeforeReview / TICKS_PER_DAY));
@@ -22,19 +22,19 @@ export function osrSchedule(
     if (response === ReviewResponse.Easy) {
         ease += 20;
         interval = ((interval + delayedBeforeReviewDays) * ease) / 100;
-        interval *= settings.easyBonus;
+        interval *= parameters.easyBonus;
     } else if (response === ReviewResponse.Good) {
         interval = ((interval + delayedBeforeReviewDays / 2) * ease) / 100;
     } else if (response === ReviewResponse.Hard) {
         ease = Math.max(130, ease - 20);
         interval = Math.max(
             1,
-            (interval + delayedBeforeReviewDays / 4) * settings.lapsesIntervalChange,
+            (interval + delayedBeforeReviewDays / 4) * parameters.lapsesIntervalChange,
         );
     }
 
     // replaces random fuzz with load balancing over the fuzz interval
-    if (settings.loadBalance && dueDateHistogram !== undefined) {
+    if (parameters.loadBalance && dueDateHistogram !== undefined) {
         interval = Math.round(interval);
         // disable fuzzing for small intervals
         if (interval > 7) {
@@ -50,7 +50,7 @@ export function osrSchedule(
         }
     }
 
-    interval = Math.min(interval, settings.maximumInterval);
+    interval = Math.min(interval, parameters.maximumInterval);
     interval = Math.round(interval * 10) / 10;
 
     return { interval, ease };

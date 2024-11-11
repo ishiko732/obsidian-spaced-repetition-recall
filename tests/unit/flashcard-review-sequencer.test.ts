@@ -454,7 +454,7 @@ describe("processReview", () => {
                 card = c.reviewSequencer.currentCard;
                 expect(card.front).toEqual("Q1");
                 expect(card.scheduleInfo).toMatchObject({
-                    latestEase: DEFAULT_SETTINGS.baseEase,
+                    latestEase: DEFAULT_SETTINGS.osrParams.baseEase,
                     interval: 1,
                 });
             });

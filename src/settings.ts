@@ -4,6 +4,7 @@ import { Algorithm } from "src/algorithms/base/isrs-algorithm";
 import { DataStoreName } from "src/data-stores/base/data-store";
 import { t } from "src/lang/helpers";
 import { pathMatchesPattern } from "src/utils/fs";
+import { IOsrParameters } from "./algorithms/osr/types";
 
 export interface SRSettings {
     // flashcards
@@ -47,13 +48,8 @@ export interface SRSettings {
     reviewButtonDelay: number;
 
     // algorithm
-    algorithm: string;
-    baseEase: number;
-    lapsesIntervalChange: number;
-    easyBonus: number;
-    loadBalance: boolean;
-    maximumInterval: number;
-    maxLinkFactor: number;
+    algorithm: Algorithm;
+    osrParams: IOsrParameters;
 
     // storage
     dataStore: string;
@@ -107,12 +103,14 @@ export const DEFAULT_SETTINGS: SRSettings = {
 
     // algorithm
     algorithm: Algorithm.SM_2_OSR,
-    baseEase: 250,
-    lapsesIntervalChange: 0.5,
-    easyBonus: 1.3,
-    loadBalance: true,
-    maximumInterval: 36525,
-    maxLinkFactor: 1.0,
+    osrParams: {
+        baseEase: 250,
+        lapsesIntervalChange: 0.5,
+        easyBonus: 1.3,
+        loadBalance: true,
+        maximumInterval: 36525,
+        maxLinkFactor: 1.0,
+    },
 
     // storage
     dataStore: DataStoreName.NOTES,

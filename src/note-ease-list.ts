@@ -17,7 +17,7 @@ export class NoteEaseList implements INoteEaseList {
     }
 
     get baseEase() {
-        return this.settings.baseEase;
+        return this.settings.osrParams.baseEase;
     }
 
     hasEaseForPath(path: string): boolean {
