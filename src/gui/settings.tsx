@@ -15,9 +15,12 @@ export class SRSettingTab extends PluginSettingTab {
     private plugin: SRPlugin;
     private tabStructure: TabStructure;
     private statistics: StatisticsView;
+    private settingSRSParameters: ISettingAlgorithmParameter;
 
     constructor(app: App, plugin: SRPlugin) {
         super(app, plugin);
+        this.plugin.data.settings
+        this.settingSRSParameters = new SettingAlgorithmOSR(this.plugin, this);
         this.plugin = plugin;
     }
 
@@ -818,10 +821,8 @@ export class SRSettingTab extends PluginSettingTab {
                     this.display();
                 }),
         );
-        let algorithmSettings: ISettingAlgorithmParameter;
-        algorithmSettings = new SettingAlgorithmOSR(this.plugin, this);
 
-        algorithmSettings.groupSRSParameter(containerEl);
+        this.settingSRSParameters.groupSRSParameter(containerEl);
 
         containerEl.createEl("h3", { text: t("GROUP_DATA_STORAGE") });
         new Setting(containerEl)

@@ -39,6 +39,8 @@ import { QuestionPostponementList } from "src/question-postponement-list";
 import { DEFAULT_SETTINGS, SettingsUtil, SRSettings, upgradeSettings } from "src/settings";
 import { TopicPath } from "src/topic-path";
 import { convertToStringOrEmpty, TextDirection } from "src/utils/strings";
+import { SRSAlgorithmFactory } from "./algorithms/base/isrs-algorithm-factory";
+import { DataStoreAlgorithmFactory } from "./data-store-algorithm/idata-store-algorithm-factory";
 
 export default class SRPlugin extends Plugin {
     public data: PluginData;
@@ -421,9 +423,10 @@ export default class SRPlugin extends Plugin {
 
     setupDataStoreAndAlgorithmInstances(settings: SRSettings) {
         // For now we can hardcode as we only support the one data store and one algorithm
+        const { algorithm } = settings;
         DataStore.instance = new StoreInNotes(settings);
-        SrsAlgorithm.instance = new SrsAlgorithmOsr(settings);
-        DataStoreAlgorithm.instance = new DataStoreInNoteAlgorithmOsr(settings);
+        SrsAlgorithm.instance = SRSAlgorithmFactory(algorithm, settings);
+        DataStoreAlgorithm.instance = DataStoreAlgorithmFactory(algorithm, settings);
     }
 
     async savePluginData(): Promise<void> {
