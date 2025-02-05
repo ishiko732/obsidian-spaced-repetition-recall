@@ -1,12 +1,12 @@
 import { Menu, Notice, Plugin, TAbstractFile, TFile, WorkspaceLeaf } from "obsidian";
 
+import { SRSAlgorithmFactory } from "src/algorithms/base/isrs-algorithm-factory";
 import { ReviewResponse } from "src/algorithms/base/repetition-item";
 import { SrsAlgorithm } from "src/algorithms/base/srs-algorithm";
 import { ObsidianVaultNoteLinkInfoFinder } from "src/algorithms/osr/obsidian-vault-notelink-info-finder";
-import { SrsAlgorithmOsr } from "src/algorithms/osr/srs-algorithm-osr";
 import { OsrAppCore } from "src/core";
 import { DataStoreAlgorithm } from "src/data-store-algorithm/data-store-algorithm";
-import { DataStoreInNoteAlgorithmOsr } from "src/data-store-algorithm/data-store-in-note-algorithm-osr";
+import { DataStoreAlgorithmFactory } from "src/data-store-algorithm/idata-store-algorithm-factory";
 import { DataStore } from "src/data-stores/base/data-store";
 import { StoreInNotes } from "src/data-stores/notes/notes";
 import { CardListType, Deck, DeckTreeFilter } from "src/deck";
@@ -524,9 +524,10 @@ export default class SRPlugin extends Plugin {
 
     setupDataStoreAndAlgorithmInstances(settings: SRSettings) {
         // For now we can hardcode as we only support the one data store and one algorithm
+        const { algorithm } = settings;
         DataStore.instance = new StoreInNotes(settings);
-        SrsAlgorithm.instance = new SrsAlgorithmOsr(settings);
-        DataStoreAlgorithm.instance = new DataStoreInNoteAlgorithmOsr(settings);
+        SrsAlgorithm.instance = SRSAlgorithmFactory(algorithm, settings);
+        DataStoreAlgorithm.instance = DataStoreAlgorithmFactory(algorithm, settings);
     }
     async savePluginData(): Promise<void> {
         await this.saveData(this.data);

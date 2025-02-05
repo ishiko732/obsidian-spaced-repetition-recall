@@ -10,13 +10,13 @@ test("Test reviewing with default settings", () => {
         osrSchedule(
             ReviewResponse.Easy,
             1,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             emptyHistogram,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase + 20,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase + 20,
         interval: 4,
     });
 
@@ -24,13 +24,13 @@ test("Test reviewing with default settings", () => {
         osrSchedule(
             ReviewResponse.Good,
             1,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             emptyHistogram,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 3,
     });
 
@@ -38,13 +38,13 @@ test("Test reviewing with default settings", () => {
         osrSchedule(
             ReviewResponse.Hard,
             1,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             emptyHistogram,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase - 20,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase - 20,
         interval: 1,
     });
 });
@@ -55,13 +55,13 @@ test("Test reviewing with default settings & delay", () => {
         osrSchedule(
             ReviewResponse.Easy,
             10,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             delay,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             emptyHistogram,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase + 20,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase + 20,
         interval: 42,
     });
 
@@ -69,13 +69,13 @@ test("Test reviewing with default settings & delay", () => {
         osrSchedule(
             ReviewResponse.Good,
             10,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             delay,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             emptyHistogram,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 28,
     });
 
@@ -83,13 +83,13 @@ test("Test reviewing with default settings & delay", () => {
         osrSchedule(
             ReviewResponse.Hard,
             10,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             delay,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             emptyHistogram,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase - 20,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase - 20,
         interval: 5,
     });
 });
@@ -107,13 +107,13 @@ test("Test load balancing, small interval (load balancing disabled)", () => {
         osrSchedule(
             ReviewResponse.Good,
             1,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             dueDates,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: newInterval,
     });
     dueDates.decrement(originalInterval);
@@ -137,13 +137,13 @@ test("Test load balancing", () => {
         osrSchedule(
             ReviewResponse.Good,
             2,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             dueDates,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 5,
     });
 
@@ -157,13 +157,13 @@ test("Test load balancing", () => {
         osrSchedule(
             ReviewResponse.Good,
             7,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             dueDates,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 19,
     });
 
@@ -176,13 +176,13 @@ test("Test load balancing", () => {
         osrSchedule(
             ReviewResponse.Good,
             10,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             dueDates,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 25,
     });
 
@@ -202,13 +202,13 @@ test("Test load balancing", () => {
         osrSchedule(
             ReviewResponse.Good,
             25,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             dueDates,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 66,
     });
 
@@ -228,13 +228,13 @@ test("Test load balancing", () => {
         osrSchedule(
             ReviewResponse.Good,
             500,
-            DEFAULT_SETTINGS.baseEase,
+            DEFAULT_SETTINGS.osrParams.baseEase,
             0,
-            DEFAULT_SETTINGS,
+            DEFAULT_SETTINGS.osrParams,
             dueDates,
         ),
     ).toEqual({
-        ease: DEFAULT_SETTINGS.baseEase,
+        ease: DEFAULT_SETTINGS.osrParams.baseEase,
         interval: 1253,
     });
 });
