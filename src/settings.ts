@@ -152,6 +152,29 @@ export function upgradeSettings(settings: SRSettings) {
     }
 }
 
+export function upgradeAlgorithmSettings(settings: SRSettings) {
+    if (settings.osrParams == null) {
+        const osrParams = Object.assign({}, DEFAULT_SETTINGS.osrParams);
+        if ("baseEase" in settings) osrParams.baseEase = settings.baseEase as number;
+        if ("lapsesIntervalChange" in settings)
+            osrParams.lapsesIntervalChange = settings.lapsesIntervalChange as number;
+        if ("easyBonus" in settings) osrParams.easyBonus = settings.easyBonus as number;
+        if ("loadBalance" in settings) osrParams.loadBalance = settings.loadBalance as boolean;
+        if ("maximumInterval" in settings)
+            osrParams.maximumInterval = settings.maximumInterval as number;
+        if ("maxLinkFactor" in settings) osrParams.maxLinkFactor = settings.maxLinkFactor as number;
+        Object.assign(settings, { osrParams });
+
+        // After the upgrade, we don't need the old attributes any more
+        Reflect.deleteProperty(settings, "baseEase");
+        Reflect.deleteProperty(settings, "lapsesIntervalChange");
+        Reflect.deleteProperty(settings, "easyBonus");
+        Reflect.deleteProperty(settings, "loadBalance");
+        Reflect.deleteProperty(settings, "maximumInterval");
+        Reflect.deleteProperty(settings, "maxLinkFactor");
+    }
+}
+
 export class SettingsUtil {
     static isFlashcardTag(settings: SRSettings, tag: string): boolean {
         return SettingsUtil.isTagInList(settings.flashcardTags, tag);

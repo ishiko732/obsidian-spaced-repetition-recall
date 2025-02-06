@@ -1,15 +1,15 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 
+import { Algorithm } from "src/algorithms/base/isrs-algorithm";
+import { ISettingAlgorithmParameter } from "src/gui/setting-algorithm/isetting-algorithm";
+import { SettingAlgorithmOSR  } from "src/gui/setting-algorithm/setting-algorithm-osr";
 import { StatisticsView } from "src/gui/statistics";
 import { createTabs, TabStructure } from "src/gui/tabs";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { setDebugParser } from "src/parser";
 import { DEFAULT_SETTINGS } from "src/settings";
-import { Algorithm } from "src/algorithms/base/isrs-algorithm";
 import { applySettingsUpdate } from "src/utils/debounce";
-import { SettingAlgorithmOSR } from "./setting-algorithm/setting-algorithm-osr";
-import { ISettingAlgorithmParameter } from "./setting-algorithm/isetting-algorithm";
 
 export class SRSettingTab extends PluginSettingTab {
     private plugin: SRPlugin;
@@ -19,7 +19,6 @@ export class SRSettingTab extends PluginSettingTab {
 
     constructor(app: App, plugin: SRPlugin) {
         super(app, plugin);
-        this.plugin.data.settings
         this.settingSRSParameters = new SettingAlgorithmOSR(this.plugin, this);
         this.plugin = plugin;
     }

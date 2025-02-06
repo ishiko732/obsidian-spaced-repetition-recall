@@ -1,8 +1,8 @@
 import { ReviewResponse } from "src/algorithms/base/repetition-item";
+import { IOsrParameters } from "src/algorithms/osr/types";
 import { TICKS_PER_DAY } from "src/constants";
 import { DueDateHistogram } from "src/due-date-histogram";
 import { t } from "src/lang/helpers";
-import { IOsrParameters } from "./types";
 
 // Note that if dueDateHistogram is provided, then it is just used to assist with fuzzing.
 // (Unlike earlier versions, it is not updated based on the calculated schedule. The

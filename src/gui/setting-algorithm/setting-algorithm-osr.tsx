@@ -1,9 +1,9 @@
 import { Notice, PluginSettingTab, Setting } from "obsidian";
 
+import { ISettingAlgorithmParameter } from "src/gui/setting-algorithm/isetting-algorithm";
 import { t } from "src/lang/helpers";
-import { DEFAULT_SETTINGS } from "src/settings";
-import { ISettingAlgorithmParameter } from "./isetting-algorithm";
 import SRPlugin from "src/main";
+import { DEFAULT_SETTINGS } from "src/settings";
 import { applySettingsUpdate } from "src/utils/debounce";
 
 export class SettingAlgorithmOSR implements ISettingAlgorithmParameter {
@@ -180,34 +180,5 @@ export class SettingAlgorithmOSR implements ISettingAlgorithmParameter {
                         this.settingTab.display();
                     });
             });
-
-        containerEl.createEl("h3", { text: t("GROUP_DATA_STORAGE") });
-
-        new Setting(containerEl)
-            .setName(t("GROUP_DATA_STORAGE"))
-            .setDesc(t("GROUP_DATA_STORAGE_DESC"))
-            .addDropdown((dropdown) =>
-                dropdown
-                    .addOptions({
-                        NOTES: t("STORE_IN_NOTES"),
-                    })
-                    .setValue(this.plugin.data.settings.dataStore)
-                    .onChange(async (value) => {
-                        this.plugin.data.settings.dataStore = value;
-                        await this.plugin.savePluginData();
-                    }),
-            );
-
-        new Setting(containerEl)
-            .setName(t("INLINE_SCHEDULING_COMMENTS"))
-            .setDesc(t("INLINE_SCHEDULING_COMMENTS_DESC"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.data.settings.cardCommentOnSameLine)
-                    .onChange(async (value) => {
-                        this.plugin.data.settings.cardCommentOnSameLine = value;
-                        await this.plugin.savePluginData();
-                    }),
-            );
     }
 }

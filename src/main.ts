@@ -38,7 +38,13 @@ import { NoteReviewQueue } from "src/note-review-queue";
 import { setDebugParser } from "src/parser";
 import { DEFAULT_DATA, PluginData } from "src/plugin-data";
 import { QuestionPostponementList } from "src/question-postponement-list";
-import { DEFAULT_SETTINGS, SettingsUtil, SRSettings, upgradeSettings } from "src/settings";
+import {
+    DEFAULT_SETTINGS,
+    SettingsUtil,
+    SRSettings,
+    upgradeAlgorithmSettings,
+    upgradeSettings,
+} from "src/settings";
 import { TopicPath } from "src/topic-path";
 import { convertToStringOrEmpty, TextDirection } from "src/utils/strings";
 
@@ -515,6 +521,8 @@ export default class SRPlugin extends Plugin {
     async loadPluginData(): Promise<void> {
         const loadedData: PluginData = await this.loadData();
         if (loadedData?.settings) upgradeSettings(loadedData.settings);
+        if (!loadedData?.settings?.osrParams) upgradeAlgorithmSettings(loadedData.settings);
+
         this.data = Object.assign({}, DEFAULT_DATA, loadedData);
         this.data.settings = Object.assign({}, DEFAULT_SETTINGS, this.data.settings);
         setDebugParser(this.data.settings.showParserDebugMessages);
