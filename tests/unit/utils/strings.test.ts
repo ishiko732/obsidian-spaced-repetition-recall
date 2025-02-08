@@ -5,6 +5,7 @@ import {
     findLineIndexOfSearchStringIgnoringWs,
     literalStringReplace,
     MultiLineTextFinder,
+    parseObsidianFrontmatterTag,
     splitNoteIntoFrontmatterAndContent,
     splitTextIntoLineArray,
     stringTrimStart,
@@ -720,6 +721,28 @@ Replacement line 2`;
 
         const expectedResult: string = null;
         checkFindAndReplaceResult(text10, searchStr, replacementStr, expectedResult);
+    });
+});
+
+describe("parseObsidianFrontmatterTag", () => {
+    test("Empty string returns empty array", () => {
+        const result = parseObsidianFrontmatterTag("");
+        expect(result).toEqual([]);
+    });
+
+    test("Single tag without leading #", () => {
+        const result = parseObsidianFrontmatterTag("flashcards/example");
+        expect(result).toEqual(["#flashcards/example"]);
+    });
+
+    test("Single tag with leading #", () => {
+        const result = parseObsidianFrontmatterTag("#flashcards/example");
+        expect(result).toEqual(["#flashcards/example"]);
+    });
+
+    test("Multiple tags with mixed leading #", () => {
+        const result = parseObsidianFrontmatterTag("#tag1,tag2,#tag3,tag4");
+        expect(result).toEqual(["#tag1", "#tag2", "#tag3", "#tag4"]);
     });
 });
 

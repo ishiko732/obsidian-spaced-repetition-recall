@@ -1,5 +1,6 @@
 import {
     IStaticRandom,
+    RandomNumberProvider,
     setupNextRandomNumber,
     setupStaticRandomNumberProvider,
     ValueCountDict,
@@ -32,6 +33,16 @@ describe("ValueCountDict", () => {
         expect(valueCountDict.getMaxValue()).toBe(10);
     });
 
+    test("getMaxValue should return 0 for an empty dictionary", () => {
+        valueCountDict.dict = { 0: 0 };
+        expect(valueCountDict.getMaxValue()).toBe(0);
+    });
+
+    test("getTotalOfValueMultiplyCount should return 0 for an empty dictionary", () => {
+        valueCountDict.dict = { 0: 0 };
+        expect(valueCountDict.getTotalOfValueMultiplyCount()).toBe(0);
+    });
+
     test("getTotalOfValueMultiplyCount should return the sum of value * count", () => {
         valueCountDict.dict = { 5: 2, 10: 1, 3: 5 };
         expect(valueCountDict.getTotalOfValueMultiplyCount()).toBe(5 * 2 + 10 * 1 + 3 * 5);
@@ -50,6 +61,17 @@ describe("ValueCountDict", () => {
     test("hasValue should return false if value does not exist", () => {
         valueCountDict.dict = { 5: 2, 10: 1, 3: 5 };
         expect(valueCountDict.hasValue(7)).toBe(false);
+    });
+});
+
+describe("RandomNumberProvider", () => {
+    test("getInteger", () => {
+        const provider = new RandomNumberProvider();
+        const lowerBound = 0;
+        const upperBound = 10;
+        const value = provider.getInteger(lowerBound, upperBound);
+        expect(value).toBeGreaterThanOrEqual(lowerBound);
+        expect(value).toBeLessThanOrEqual(upperBound);
     });
 });
 
@@ -100,6 +122,42 @@ describe("WeightedRandomNumber", () => {
             checkGetRandomValues(weights, { lower: 0, upper: 49, next: 0 }, 10, 10);
         };
         expect(t).toThrow();
+    });
+
+    test("All weights must be positive integers", () => {
+        const weights: Record<number, number> = {
+            10: 5,
+            20: 33,
+            30: 0,
+            40: -11,
+        };
+        const t = () => {
+            checkGetRandomValues(weights, { lower: 0, upper: 49, next: 0 }, 10, 10);
+        };
+        expect(t).toThrow("All weights must be positive integers");
+    });
+
+    test("lowerBound !=expectedLowerBound", () => {
+        const weights: Record<number, number> = {
+            10: 5,
+            20: 33,
+            30: 0,
+            [-40]: 11,
+        };
+        const t = () => {
+            checkGetRandomValues(weights, { lower: 0, upper: 49, next: 0 }, 10, 10);
+        };
+        expect(t).toThrow();
+    });
+
+    test("Should throw when all weights sum to 0", () => {
+        const weights: Record<number, number> = {};
+        setupNextRandomNumber({ lower: 0, upper: -1, next: 0 });
+
+        const t = () => {
+            provider.getRandomValues(weights);
+        };
+        expect(t).toThrow("");
     });
 });
 
