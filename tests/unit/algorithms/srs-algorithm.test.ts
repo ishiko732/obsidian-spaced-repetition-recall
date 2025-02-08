@@ -1,14 +1,14 @@
-import { DataStore } from "src/data-stores/base/data-store";
+import { SrsAlgorithm } from "src/algorithms/base/srs-algorithm";
 
-describe("DataStore not initialised exception", () => {
+describe("SrsAlgorithm not initialised exception", () => {
     beforeEach(() => {
         // Reset the singleton instance before each test
-        DataStore.instance = null;
+        SrsAlgorithm.instance = null;
     });
 
     test("getInstance() not initialised exception", () => {
         const t = () => {
-            DataStore.getInstance();
+            SrsAlgorithm.getInstance();
         };
         expect(t).toThrow(Error);
     });
