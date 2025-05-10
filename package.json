@@ -1,6 +1,6 @@
 {
     "name": "obsidian-spaced-repetition",
-    "version": "1.12.5.14",
+    "version": "1.12.5.15",
     "description": "Fight the forgetting curve by reviewing flashcards & entire notes.",
     "main": "main.js",
     "scripts": {
@@ -42,7 +42,7 @@
         "moment": "^2.30.1",
         "obsidian": "^1.6.6",
         "prettier": "^3.3.3",
-        "ts-fsrs": "^4.6.1",
+        "ts-fsrs": "^4.7.1",
         "ts-jest": "^29.2.5",
         "tslib": "2.6.1",
         "typescript": "5.1.6",
