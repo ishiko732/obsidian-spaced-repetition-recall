@@ -15,19 +15,19 @@ import {
 import { Note } from "src/Note";
 import { RenderMarkdownWrapper } from "src/util/RenderMarkdownWrapper";
 import { CardScheduleInfo } from "src/CardSchedule";
-import { FlashcardModalMode } from "./FlashcardModal";
+import { FlashcardMode } from "./FlashcardModal";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
 import { SrTFile } from "src/SRFile";
 import { ItemInfoModal } from "./info";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { debug } from "src/util/utils_recall";
 
-export class FlashcardReviewView {
+export class CardUI {
     public app: App;
     public plugin: SRPlugin;
-    public modalContentEl: HTMLElement;
-    public modalEl: HTMLElement;
-    public mode: FlashcardModalMode;
+    public contentEl: HTMLElement;
+    public parentEl: HTMLElement;
+    public mode: FlashcardMode;
 
     public view: HTMLDivElement;
 
@@ -69,7 +69,7 @@ export class FlashcardReviewView {
         reviewSequencer: IFlashcardReviewSequencer,
         reviewMode: FlashcardReviewMode,
         contentEl: HTMLElement,
-        modalEl: HTMLElement,
+        parentEl: HTMLElement,
         backClickHandler: () => void,
         editClickHandler: () => void,
     ) {
@@ -82,8 +82,8 @@ export class FlashcardReviewView {
         this.reviewMode = reviewMode;
         this.backClickHandler = backClickHandler;
         this.editClickHandler = editClickHandler;
-        this.modalContentEl = contentEl;
-        this.modalEl = modalEl;
+        this.contentEl = contentEl;
+        this.parentEl = parentEl;
 
         // Build ui
         this.init();
@@ -93,7 +93,7 @@ export class FlashcardReviewView {
      * Initializes all static elements in the FlashcardView
      */
     init() {
-        this.view = this.modalContentEl.createDiv();
+        this.view = this.contentEl.createDiv();
         this.view.addClasses(["sr-flashcard", "sr-is-hidden"]);
 
         this.header = this.view.createDiv();
@@ -127,7 +127,7 @@ export class FlashcardReviewView {
      * Shows the FlashcardView & rerenders all dynamic elements
      */
     async show() {
-        this.mode = FlashcardModalMode.Front;
+        this.mode = FlashcardMode.Front;
         const deck: Deck = this.reviewSequencer.currentDeck;
 
         // Setup title
@@ -192,10 +192,11 @@ export class FlashcardReviewView {
     // -> Functions & helpers
 
     private _keydownHandler = (e: KeyboardEvent) => {
-        // Prevents any input, if the edit modal is open
+        // Prevents any input, if the edit modal is open or if the view is not in focus
         if (
             document.activeElement.nodeName === "TEXTAREA" ||
-            this.mode === FlashcardModalMode.Closed
+            this.mode === FlashcardMode.Closed ||
+            !this.plugin.getSRInFocusState()
         ) {
             return;
         }
@@ -211,17 +212,17 @@ export class FlashcardReviewView {
                 consumeKeyEvent();
                 break;
             case "Space":
-                if (this.mode === FlashcardModalMode.Front) {
+                if (this.mode === FlashcardMode.Front) {
                     this._showAnswer();
                     consumeKeyEvent();
-                } else if (this.mode === FlashcardModalMode.Back) {
+                } else if (this.mode === FlashcardMode.Back) {
                     this._processReview(ReviewResponse.Good);
                     consumeKeyEvent();
                 }
                 break;
             case "Enter":
             case "NumpadEnter":
-                if (this.mode !== FlashcardModalMode.Front) {
+                if (this.mode !== FlashcardMode.Front) {
                     break;
                 }
                 this._showAnswer();
@@ -229,7 +230,7 @@ export class FlashcardReviewView {
                 break;
             case "Numpad1":
             case "Digit1":
-                if (this.mode !== FlashcardModalMode.Back) {
+                if (this.mode !== FlashcardMode.Back) {
                     break;
                 }
                 this._processReview(ReviewResponse.Hard);
@@ -237,7 +238,7 @@ export class FlashcardReviewView {
                 break;
             case "Numpad2":
             case "Digit2":
-                if (this.mode !== FlashcardModalMode.Back) {
+                if (this.mode !== FlashcardMode.Back) {
                     break;
                 }
                 this._processReview(ReviewResponse.Good);
@@ -245,7 +246,7 @@ export class FlashcardReviewView {
                 break;
             case "Numpad3":
             case "Digit3":
-                if (this.mode !== FlashcardModalMode.Back) {
+                if (this.mode !== FlashcardMode.Back) {
                     break;
                 }
                 this._processReview(ReviewResponse.Easy);
@@ -253,7 +254,7 @@ export class FlashcardReviewView {
                 break;
             case "Numpad0":
             case "Digit0":
-                if (this.mode !== FlashcardModalMode.Back) {
+                if (this.mode !== FlashcardMode.Back) {
                     break;
                 }
                 this._processReview(ReviewResponse.Reset);
@@ -290,7 +291,7 @@ export class FlashcardReviewView {
     }
 
     private _showAnswer(): void {
-        this.mode = FlashcardModalMode.Back;
+        this.mode = FlashcardMode.Back;
         this._previousCard =
             this._currentCard?.multiClozeIndex >= 0 ? this._currentCard : undefined;
 
@@ -419,7 +420,7 @@ export class FlashcardReviewView {
     // -> Header
 
     private _createBackButton() {
-        this.backButton = this.modalEl.createDiv();
+        this.backButton = this.parentEl.createDiv();
         this.backButton.addClasses(["sr-back-button", "sr-is-hidden"]);
         setIcon(this.backButton, "arrow-left");
         this.backButton.setAttribute("aria-label", t("BACK"));

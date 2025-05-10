@@ -1,20 +1,20 @@
 import {
+    FrontMatterCache,
+    getAllTags,
     Notice,
     Plugin,
     TAbstractFile,
     TFile,
-    getAllTags,
-    FrontMatterCache,
     WorkspaceLeaf,
 } from "obsidian";
 import * as graph from "pagerank.js";
 
-import { SRSettingTab, SRSettings, DEFAULT_SETTINGS, upgradeSettings } from "src/settings";
+import { DEFAULT_SETTINGS, SRSettings, SRSettingTab, upgradeSettings } from "src/settings";
 import { FlashcardModal } from "src/gui/FlashcardModal";
 import { StatsModal } from "src/gui/StatsModal";
-import { ReviewQueueListView, REVIEW_QUEUE_VIEW_TYPE } from "src/gui/Sidebar";
+import { REVIEW_QUEUE_VIEW_TYPE, ReviewQueueListView } from "src/gui/Sidebar";
 import { ReviewResponse, schedule } from "src/scheduling";
-import { YAML_FRONT_MATTER_REGEX, SCHEDULING_INFO_REGEX } from "src/constants";
+import { SCHEDULING_INFO_REGEX, YAML_FRONT_MATTER_REGEX } from "src/constants";
 import { ReviewDeck, SchedNote } from "src/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { appIcon } from "src/icons/appicon";
@@ -28,10 +28,10 @@ import {
 } from "./FlashcardReviewSequencer";
 import {
     CardOrder,
+    DeckOrder,
     DeckTreeIterator,
     IDeckTreeIterator,
     IIteratorOrder,
-    DeckOrder,
 } from "./DeckTreeIterator";
 import { CardScheduleCalculator } from "./CardSchedule";
 import { Note } from "./Note";
@@ -42,23 +42,17 @@ import { DeckTreeStatsCalculator } from "./DeckTreeStatsCalculator";
 import { NoteEaseList } from "./NoteEaseList";
 import { QuestionPostponementList } from "./QuestionPostponementList";
 import { TextDirection } from "./util/TextDirection";
-import { convertToStringOrEmpty } from "./util/utils";
-import { isEqualOrSubPath } from "./util/utils";
+import { convertToStringOrEmpty, isEqualOrSubPath } from "./util/utils";
 import { generateParser } from "./generateParser";
 import { setDebugParser } from "./parser";
 
 // https://github.com/martin-jw/obsidian-recall
 import { DataStore } from "./dataStore/data";
 import Commands from "./commands";
-import { SrsAlgorithm, algorithmNames } from "src/algorithms/algorithms";
+import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 
 import { reviewResponseModal } from "src/gui/reviewresponse-modal";
-import {
-    debug,
-    isVersionNewerThanOther,
-    logExecutionTime,
-    isIgnoredPath,
-} from "./util/utils_recall";
+import { debug, isIgnoredPath, isVersionNewerThanOther } from "./util/utils_recall";
 import { ReleaseNotes } from "src/gui/ReleaseNotes";
 
 import { algorithms } from "src/algorithms/algorithms_switch";
@@ -73,8 +67,9 @@ import { RepetitionItem } from "./dataStore/repetitionItem";
 import { IReviewNote } from "./reviewNote/review-note";
 import { ReviewView } from "./gui/reviewView";
 import { MixQueSet } from "./dataStore/mixQueSet";
-import { Tags } from "./tags";
 import { Iadapter } from "./dataStore/adapter";
+import TabViewManager from "src/gui/TabViewManager";
+import { TabView } from "src/gui/TabView";
 
 interface PluginData {
     settings: SRSettings;
@@ -104,9 +99,11 @@ const DEFAULT_DATA: PluginData = {
 // }
 
 export default class SRPlugin extends Plugin {
+    private isSRInFocus: boolean = false;
     private statusBar: HTMLElement;
     private reviewQueueView: ReviewQueueListView;
     public data: PluginData;
+    public tabViewManager: TabViewManager;
     public syncLock = false;
 
     public reviewDecks: { [deckKey: string]: ReviewDeck } = {};
@@ -121,7 +118,7 @@ export default class SRPlugin extends Plugin {
     public dueDatesNotes: Record<number, number> = {}; // Record<# of days in future, due count>
 
     public deckTree: Deck = new Deck("root", null);
-    private remainingDeckTree: Deck;
+    public remainingDeckTree: Deck;
     public cardStats: Stats;
     public noteStats: Stats;
 
@@ -141,6 +138,12 @@ export default class SRPlugin extends Plugin {
     private debouncedGenerateParserTimeout: number | null = null;
 
     async onload(): Promise<void> {
+        // Closes all still open tab views when the plugin is loaded, because it causes bugs / empty windows otherwise
+        this.tabViewManager = new TabViewManager(this);
+        this.app.workspace.onLayoutReady(async () => {
+            this.tabViewManager.closeAllTabViews();
+        });
+
         SRPlugin._instance = this;
         Iadapter.create(this.app);
         await this.loadPluginData();
@@ -213,11 +216,15 @@ export default class SRPlugin extends Plugin {
         this.addRibbonIcon("SpacedRepIcon", t("REVIEW_CARDS"), async () => {
             if (!this.syncLock) {
                 await this.sync();
-                this.openFlashcardModal(
-                    this.deckTree,
-                    this.remainingDeckTree,
-                    FlashcardReviewMode.Review,
-                );
+                if (this.data.settings.openViewAsTab) {
+                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
+                } else {
+                    this.openFlashcardModal(
+                        this.deckTree,
+                        this.remainingDeckTree,
+                        FlashcardReviewMode.Review,
+                    );
+                }
             }
         });
 
@@ -282,8 +289,15 @@ export default class SRPlugin extends Plugin {
             id: "srs-review-flashcards",
             name: t("REVIEW_ALL_CARDS"),
             callback: async () => {
-                if (!this.syncLock) {
-                    await this.sync();
+                if (this.syncLock) {
+                    return;
+                }
+
+                await this.sync();
+
+                if (this.data.settings.openViewAsTab) {
+                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
+                } else {
                     this.openFlashcardModal(
                         this.deckTree,
                         this.remainingDeckTree,
@@ -298,7 +312,15 @@ export default class SRPlugin extends Plugin {
             name: t("CRAM_ALL_CARDS"),
             callback: async () => {
                 await this.sync();
-                this.openFlashcardModal(this.deckTree, this.deckTree, FlashcardReviewMode.Cram);
+                if (this.data.settings.openViewAsTab) {
+                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Cram);
+                } else {
+                    this.openFlashcardModal(
+                        this.deckTree,
+                        this.remainingDeckTree,
+                        FlashcardReviewMode.Cram,
+                    );
+                }
             },
         });
 
@@ -307,7 +329,13 @@ export default class SRPlugin extends Plugin {
             name: t("REVIEW_CARDS_IN_NOTE"),
             callback: async () => {
                 const openFile: TFile | null = this.app.workspace.getActiveFile();
-                if (openFile && openFile.extension === "md") {
+                if (!openFile || openFile.extension !== "md") {
+                    return;
+                }
+
+                if (this.data.settings.openViewAsTab) {
+                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Review, openFile);
+                } else {
                     this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Review);
                 }
             },
@@ -318,7 +346,13 @@ export default class SRPlugin extends Plugin {
             name: t("CRAM_CARDS_IN_NOTE"),
             callback: async () => {
                 const openFile: TFile | null = this.app.workspace.getActiveFile();
-                if (openFile && openFile.extension === "md") {
+                if (!openFile || openFile.extension !== "md") {
+                    return;
+                }
+
+                if (this.data.settings.openViewAsTab) {
+                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Cram, openFile);
+                } else {
                     this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Cram);
                 }
             },
@@ -354,11 +388,14 @@ export default class SRPlugin extends Plugin {
                 }
             }, 2000);
         });
+
+        this.registerSRFocusListener();
     }
 
     onunload(): void {
         console.log("Unloading Obsidian spaced repetition Recall. ...");
         this.app.workspace.getLeavesOfType(REVIEW_QUEUE_VIEW_TYPE).forEach((leaf) => leaf.detach());
+        this.tabViewManager.closeAllTabViews();
         this.reviewFloatBar.selfDestruct();
     }
 
@@ -366,16 +403,15 @@ export default class SRPlugin extends Plugin {
         noteFile: TFile,
         reviewMode: FlashcardReviewMode,
     ): Promise<void> {
-        const note: Note = await this.loadNote(noteFile);
-
-        const deckTree = new Deck("root", null);
-        note.appendCardsToDeck(deckTree);
-        const remainingDeckTree = DeckTreeFilter.filterForRemainingCards(
-            this.questionPostponementList,
-            deckTree,
+        const singleNoteDeckData = await this.getPreparedDecksForSingleNoteReview(
+            noteFile,
             reviewMode,
         );
-        this.openFlashcardModal(deckTree, remainingDeckTree, reviewMode);
+        this.openFlashcardModal(
+            singleNoteDeckData.deckTree,
+            singleNoteDeckData.remainingDeckTree,
+            reviewMode,
+        );
     }
 
     private openFlashcardModal(
@@ -1044,5 +1080,71 @@ export default class SRPlugin extends Plugin {
                 ),
             }),
         );
+    }
+
+    public registerSRFocusListener() {
+        this.registerEvent(
+            this.app.workspace.on("active-leaf-change", this.handleFocusChange.bind(this)),
+        );
+    }
+
+    public removeSRFocusListener() {
+        this.setSRViewInFocus(false);
+        this.app.workspace.off("active-leaf-change", this.handleFocusChange.bind(this));
+    }
+
+    public async getPreparedDecksForSingleNoteReview(
+        file: TFile,
+        mode: FlashcardReviewMode,
+    ): Promise<{ deckTree: Deck; remainingDeckTree: Deck; mode: FlashcardReviewMode }> {
+        const note: Note = await this.loadNote(file);
+
+        const deckTree = new Deck("root", null);
+        note.appendCardsToDeck(deckTree);
+        const remainingDeckTree = DeckTreeFilter.filterForRemainingCards(
+            this.questionPostponementList,
+            deckTree,
+            mode,
+        );
+
+        return { deckTree, remainingDeckTree, mode };
+    }
+
+    public getPreparedReviewSequencer(
+        fullDeckTree: Deck,
+        remainingDeckTree: Deck,
+        reviewMode: FlashcardReviewMode,
+    ): { reviewSequencer: IFlashcardReviewSequencer; mode: FlashcardReviewMode } {
+        const deckIterator: IDeckTreeIterator = SRPlugin.createDeckTreeIterator(
+            this.data.settings,
+            remainingDeckTree,
+        );
+
+        const cardScheduleCalculator = new CardScheduleCalculator(
+            this.data.settings,
+            this.easeByPath,
+        );
+        const reviewSequencer: IFlashcardReviewSequencer = new FlashcardReviewSequencer(
+            reviewMode,
+            deckIterator,
+            this.data.settings,
+            cardScheduleCalculator,
+            this.questionPostponementList,
+        );
+
+        reviewSequencer.setDeckTree(fullDeckTree, remainingDeckTree);
+        return { reviewSequencer, mode: reviewMode };
+    }
+
+    public handleFocusChange(leaf: WorkspaceLeaf | null) {
+        this.setSRViewInFocus(leaf !== null && leaf.view instanceof TabView);
+    }
+
+    public setSRViewInFocus(value: boolean) {
+        this.isSRInFocus = value;
+    }
+
+    public getSRInFocusState(): boolean {
+        return this.isSRInFocus;
     }
 }

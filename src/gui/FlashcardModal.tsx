@@ -12,11 +12,11 @@ import {
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
 } from "src/FlashcardReviewSequencer";
 import { FlashcardEditModal } from "./EditModal";
-import { DeckListView } from "./DeckListView";
-import { FlashcardReviewView } from "./FlashcardReviewView";
+import { DeckUI } from "./DeckUI";
+import { CardUI } from "./CardUI";
 
-export enum FlashcardModalMode {
-    DecksList,
+export enum FlashcardMode {
+    Deck,
     Front,
     Back,
     Closed,
@@ -24,12 +24,12 @@ export enum FlashcardModalMode {
 
 export class FlashcardModal extends Modal {
     public plugin: SRPlugin;
-    public mode: FlashcardModalMode;
+    public mode: FlashcardMode;
     private reviewSequencer: IFlashcardReviewSequencer;
     private settings: SRSettings;
     private reviewMode: FlashcardReviewMode;
-    private deckView: DeckListView;
-    private flashcardView: FlashcardReviewView;
+    private deckView: DeckUI;
+    private flashcardView: CardUI;
 
     constructor(
         app: App,
@@ -56,7 +56,7 @@ export class FlashcardModal extends Modal {
         this.contentEl.addClass("sr-modal-content");
 
         // Init static elements in views
-        this.deckView = new DeckListView(
+        this.deckView = new DeckUI(
             this.plugin,
             this.settings,
             this.reviewSequencer,
@@ -64,7 +64,7 @@ export class FlashcardModal extends Modal {
             this._startReviewOfDeck.bind(this),
         );
 
-        this.flashcardView = new FlashcardReviewView(
+        this.flashcardView = new CardUI(
             this.app,
             this.plugin,
             this.settings,
@@ -82,9 +82,10 @@ export class FlashcardModal extends Modal {
     }
 
     onClose(): void {
+        this.plugin.setSRViewInFocus(false);
+        this.mode = FlashcardMode.Closed;
         this.deckView.close();
         this.flashcardView.close();
-        this.mode = FlashcardModalMode.Closed;
     }
 
     private _showDecksList(): void {
