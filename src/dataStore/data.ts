@@ -496,12 +496,12 @@ export class DataStore {
         const note = Iadapter.instance.vault.getAbstractFileByPath(path) as TFile;
         let cardName: string = null;
 
-        if (note != null && trackedFile.tags.length > 0) {
+        if (note != null && trackedFile) {
             const fileCachedData = Iadapter.instance.metadataCache.getFileCache(note) || {};
             const tags = getAllTags(fileCachedData) || [];
             const deckname = Tags.getNoteDeckName(note, this.settings);
             cardName = Tags.getTagFromSettingTags(tags, this.settings.flashcardTags);
-            if (deckname !== null || this.settings.convertFoldersToDecks) {
+            if (deckname !== null) {
                 // || cardName !== null
                 // it's taged file, can't untrack by this.
                 console.log(path + " is taged file, can't untrack by this.");
