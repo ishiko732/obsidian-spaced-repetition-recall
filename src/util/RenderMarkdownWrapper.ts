@@ -46,8 +46,10 @@ export class RenderMarkdownWrapper {
                 if (link.target.extension !== "md") {
                     this.embedMediaFile(el, link.target);
                 } else {
-                    el.innerText = "";
-                    this.renderTransclude(el, link, recursiveDepth);
+                    // We get here if there is a transclusion link, such as "![[Test Embed]]"
+                    // In version 1.12.4 and earlier we used the deprecated Obsidian MarkdownRenderer.renderMarkdown() and we
+                    // needed to have our own method "renderTransclude()" that loaded the referenced file and rendered it.
+                    // In version 1.12.5, we started using MarkdownRenderer.render() instead, which does this automatically.
                 }
             }
         });
