@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@open-spaced-repetition/binding-wasm32-wasip1>@napi-rs/wasm-runtime': 1.2.5
-
 importers:
 
   .:
@@ -31,8 +28,8 @@ importers:
         version: 5.2.0
     devDependencies:
       '@open-spaced-repetition/binding-wasm32-wasip1':
-        specifier: 0.6.0-beta.7
-        version: 0.6.0-beta.7
+        specifier: 0.6.0
+        version: 0.6.0
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -91,8 +88,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       ts-fsrs:
-        specifier: 6.0.0-beta.15
-        version: 6.0.0-beta.15
+        specifier: 6.0.0
+        version: 6.0.0
       ts-jest:
         specifier: ^29.2.5
         version: 29.2.5(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(esbuild@0.19.12)(jest@29.7.0(@types/node@20.16.2)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.1.6)))(typescript@5.1.6)
@@ -291,14 +288,14 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
 
-  '@emnapi/core@2.0.0-alpha.5':
-    resolution: {integrity: sha512-DbeLFquQJyYGwM3LzPdjvb4IRmAAQuTzEmqUGtIAYxlAO4ArfUZ7WMytLWDSsCAYm6MZJNeojaawQQiFrFVehg==}
+  '@emnapi/core@2.0.0-beta.2':
+    resolution: {integrity: sha512-MzCVoWtcg4Pm2B3je5mMvYMvj3MmBKw+fU7vbsJc9/iT8ip6/eYIHo/Dsm/mr+wsHB6SEyJDuxB09Yy6r/8+4A==}
 
-  '@emnapi/runtime@2.0.0-alpha.5':
-    resolution: {integrity: sha512-SS4jUXRklsrPKTEtW92WHdneh9QBrZGmRyeYEac2ktLN3ie1wd/BrkBbk4DqPWKhjSFfrR8NClXwMlfZ73m60A==}
+  '@emnapi/runtime@2.0.0-beta.2':
+    resolution: {integrity: sha512-JcrSPzPvZuNZvJqPTF9Fw25LbOJ8avzFVlaf2grmH4Cku0oGP47tRgqPZadcfj3YoZMHkFVnCYFbQM8I+i5QEw==}
 
-  '@emnapi/wasi-threads@2.1.0':
-    resolution: {integrity: sha512-DM18NXgQ5coifswrwhFgrqeW/UiFRaLj0aLKU0cp0FoYjEfP/hj/yUeF+Hz754ViG+jQmG2HIeDCUeQsPnRwOA==}
+  '@emnapi/wasi-threads@2.2.0':
+    resolution: {integrity: sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==}
 
   '@esbuild/aix-ppc64@0.19.12':
     resolution: {integrity: sha512-bmoCYyWdEL3wDQIVbcyzRyeKLgk2WtWLTWz1ZIAZF/EGbNOwSA6ew3PftJ1PqMiOOGu0OyFMzG53L0zqIpPeNA==}
@@ -578,12 +575,12 @@ packages:
   '@kurkle/color@0.3.2':
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
 
-  '@napi-rs/wasm-runtime@1.2.5':
-    resolution: {integrity: sha512-HshSvXzmBxNzqejd3k/KemgQ3hdREUYFRRrgxOZ+gPljDIsO2SDZrVZMd4Z/HsxudQbE62OVyVFE8z9BCurfjA==}
+  '@napi-rs/wasm-runtime@1.2.6':
+    resolution: {integrity: sha512-mRyDmEw9/fCDXCGfL1sbgIw/GUK0PVxRW4YwgPN61F3LQ+fSyoBFarJVzgGyhF6kRzEQZ0FejDqm4WLXSeqQmw==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=23.5.0}
     peerDependencies:
-      '@emnapi/core': ^1.7.1 || ^2.0.0-alpha.4
-      '@emnapi/runtime': ^1.7.1 || ^2.0.0-alpha.4
+      '@emnapi/core': ^1.7.1 || 2.0.0-beta.2
+      '@emnapi/runtime': ^1.7.1 || 2.0.0-beta.2
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -597,12 +594,12 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@open-spaced-repetition/binding-wasm32-wasip1@0.6.0-beta.7':
-    resolution: {integrity: sha512-avI6Q0Uh2eHfOtYh2b4L1OX3aJNM3HgQ2eW1+GHJP37kdzvE77DtlpRqz0ONzirz47FqdfOj8ddVH4oI6oFxAQ==}
+  '@open-spaced-repetition/binding-wasm32-wasip1@0.6.0':
+    resolution: {integrity: sha512-Pi+QOUODNOlTxRIQ8sKJokRYlc5bx+2GTKaxsjNk2QZ8cdbR+oMc5+mlL9E36X9b/cOipz3xI95/1XbJSPqUAA==}
     engines: {node: '>=24'}
 
-  '@open-spaced-repetition/srs-kit@1.0.0-beta.10':
-    resolution: {integrity: sha512-FtPmQcF2EASGEcpznnrmCKGaCjv2oos2oFBOR8ld/vgjxZmIGPss+L3fICRNV23OYInIAJVI757lrScm+Bc6qg==}
+  '@open-spaced-repetition/srs-kit@1.0.0':
+    resolution: {integrity: sha512-f++JAMpRw7Yh1U4JcHzTtVknJ1bYKz/4yejsus6TRl+ueGJpvexNBrOoqaeUWCgH/e1j046oiqjzy4Nf4RW/vw==}
     engines: {node: '>=20.0.0'}
 
   '@popperjs/core@2.11.8':
@@ -2069,8 +2066,8 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-fsrs@6.0.0-beta.15:
-    resolution: {integrity: sha512-3Gwd3BXm9KhGHUkPEiq1V+AZ+Y4CHQKWvlJ6hKIT4Aq+Ebf5YoaVgrfTbqEVp1zYQtHZLfI6D3h6CT1ukps6pQ==}
+  ts-fsrs@6.0.0:
+    resolution: {integrity: sha512-kX03GIEhXgBtUrgZuv7k7Aax8oYF3GCO0lASqJFw/8cvvI7qjE83J8IzFhHugux7//W0yquG7zidk3e9NRgEwg==}
     engines: {node: '>=24.0.0'}
 
   ts-jest@29.2.5:
@@ -2491,16 +2488,16 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.9
     optional: true
 
-  '@emnapi/core@2.0.0-alpha.5':
+  '@emnapi/core@2.0.0-beta.2':
     dependencies:
-      '@emnapi/wasi-threads': 2.1.0
+      '@emnapi/wasi-threads': 2.2.0
       tslib: 2.6.1
 
-  '@emnapi/runtime@2.0.0-alpha.5':
+  '@emnapi/runtime@2.0.0-beta.2':
     dependencies:
       tslib: 2.6.1
 
-  '@emnapi/wasi-threads@2.1.0':
+  '@emnapi/wasi-threads@2.2.0':
     dependencies:
       tslib: 2.6.1
 
@@ -2814,10 +2811,10 @@ snapshots:
 
   '@kurkle/color@0.3.2': {}
 
-  '@napi-rs/wasm-runtime@1.2.5(@emnapi/core@2.0.0-alpha.5)(@emnapi/runtime@2.0.0-alpha.5)':
+  '@napi-rs/wasm-runtime@1.2.6(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)':
     dependencies:
-      '@emnapi/core': 2.0.0-alpha.5
-      '@emnapi/runtime': 2.0.0-alpha.5
+      '@emnapi/core': 2.0.0-beta.2
+      '@emnapi/runtime': 2.0.0-beta.2
       '@tybys/wasm-util': 0.10.4
 
   '@nodelib/fs.scandir@2.1.5':
@@ -2832,13 +2829,13 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@open-spaced-repetition/binding-wasm32-wasip1@0.6.0-beta.7':
+  '@open-spaced-repetition/binding-wasm32-wasip1@0.6.0':
     dependencies:
-      '@emnapi/core': 2.0.0-alpha.5
-      '@emnapi/runtime': 2.0.0-alpha.5
-      '@napi-rs/wasm-runtime': 1.2.5(@emnapi/core@2.0.0-alpha.5)(@emnapi/runtime@2.0.0-alpha.5)
+      '@emnapi/core': 2.0.0-beta.2
+      '@emnapi/runtime': 2.0.0-beta.2
+      '@napi-rs/wasm-runtime': 1.2.6(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)
 
-  '@open-spaced-repetition/srs-kit@1.0.0-beta.10': {}
+  '@open-spaced-repetition/srs-kit@1.0.0': {}
 
   '@popperjs/core@2.11.8': {}
 
@@ -4534,9 +4531,9 @@ snapshots:
     dependencies:
       typescript: 5.1.6
 
-  ts-fsrs@6.0.0-beta.15:
+  ts-fsrs@6.0.0:
     dependencies:
-      '@open-spaced-repetition/srs-kit': 1.0.0-beta.10
+      '@open-spaced-repetition/srs-kit': 1.0.0
 
   ts-jest@29.2.5(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(esbuild@0.19.12)(jest@29.7.0(@types/node@20.16.2)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.1.6)))(typescript@5.1.6):
     dependencies:
