@@ -28,7 +28,7 @@ importers:
         version: 5.2.0
     devDependencies:
       '@open-spaced-repetition/binding-wasm32-wasip1':
-        specifier: 0.6.0
+        specifier: ^0.6.0
         version: 0.6.0
       '@popperjs/core':
         specifier: ^2.11.8
@@ -88,7 +88,7 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       ts-fsrs:
-        specifier: 6.0.0
+        specifier: ^6.0.0
         version: 6.0.0
       ts-jest:
         specifier: ^29.2.5
